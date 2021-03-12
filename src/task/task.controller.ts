@@ -7,9 +7,11 @@ import {
   Get,
   ParseIntPipe,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CreateTaskDto } from './dto/create-task.model';
+import { FilteredTaskDto } from './dto/filtered-task.model';
 import { TaskDto } from './dto/task.model';
 import { UpdateTaskDto } from './dto/update-task.model';
 import { TaskStatusType } from './enum/status.model';
@@ -21,9 +23,12 @@ export class TaskController {
   constructor(protected readonly taskService: TaskService) {}
 
   @Get()
-  async list(@Query() pagination: PaginationQueryDto): Promise<TaskDto[]> {
+  async list(
+    @Query() filter: FilteredTaskDto,
+    @Query() pagination: PaginationQueryDto,
+  ): Promise<TaskDto[]> {
     try {
-      return await this.taskService.list(pagination);
+      return await this.taskService.list(filter, pagination);
     } catch (ex) {
       console.error(ex);
       throw ex;
@@ -63,7 +68,7 @@ export class TaskController {
     }
   }
 
-  @Put(':id/:status')
+  @Patch(':id/:status')
   async updateStatus(
     @Param('id', ParseIntPipe) id: number,
     @Param('status', TaskStatusPipe) status: TaskStatusType,

@@ -1,61 +1,59 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { TaskEntity } from './data-access/task.entity';
+import { TaskRepository } from './data-access/task.repository';
 import { CreateTaskDto } from './dto/create-task.model';
+import { FilteredTaskDto } from './dto/filtered-task.model';
 import { TaskDto } from './dto/task.model';
 import { UpdateTaskDto } from './dto/update-task.model';
-import { TaskStatusEnum, TaskStatusType } from './enum/status.model';
+import { TaskStatusType } from './enum/status.model';
 
 @Injectable()
 export class TaskService {
+  constructor(
+    @InjectRepository(TaskRepository)
+    private readonly taskRepository: TaskRepository,
+  ) {}
+
   private tasks: TaskDto[] = [];
 
-  list(pagination: PaginationQueryDto | null): Promise<TaskDto[]> {
-    const { offset, limit } = pagination || {
-      offset: 0,
-      limit: this.tasks.length,
-    };
-    const result = this.tasks.slice(offset, offset + limit);
-    return Promise.resolve(result);
+  async list(
+    filter: FilteredTaskDto,
+    pagination: PaginationQueryDto,
+  ): Promise<TaskDto[]> {
+    const tasks = await this.taskRepository.getFilteredTask(filter, pagination);
+    return tasks.map(this.mapEntityToDto);
   }
 
-  getById(id: number): Promise<TaskDto> {
-    const task = this.tasks.find((t) => t.id === id);
-    if (!task) throw new NotFoundException();
-    return Promise.resolve(task);
+  async getById(id: number): Promise<TaskDto> {
+    return this.mapEntityToDto(await this.taskRepository.getById(id));
   }
 
-  insert(createTask: CreateTaskDto): Promise<TaskDto> {
-    const newTask = {
-      id: this.tasks.length + 1,
-      name: createTask.name,
-      note: createTask.note,
-      status: TaskStatusEnum.IN_PROGRESS.value,
-    };
-    this.tasks.push(newTask);
-    return Promise.resolve(newTask);
+  async insert(createTask: CreateTaskDto): Promise<TaskDto> {
+    return this.mapEntityToDto(
+      await this.taskRepository.createTask(createTask),
+    );
   }
 
-  update(id: number, updateTask: UpdateTaskDto): Promise<TaskDto> {
-    const taskIdx = this.tasks.findIndex((t) => t.id === id);
-    if (taskIdx === -1) throw new NotFoundException();
-    const task = this.tasks[taskIdx];
-    const newUpdateTask: TaskDto = {
-      ...task,
-      ...updateTask,
-    };
-    this.tasks.splice(taskIdx, 1, newUpdateTask);
-    return Promise.resolve(newUpdateTask);
+  async update(id: number, updateTask: UpdateTaskDto): Promise<TaskDto> {
+    return this.mapEntityToDto(
+      await this.taskRepository.updateTask(id, updateTask),
+    );
   }
 
-  updateStatus(id: number, status: TaskStatusType): Promise<TaskDto> {
-    const taskIdx = this.tasks.findIndex((t) => t.id === id);
-    if (taskIdx === -1) throw new NotFoundException();
-    const task = this.tasks[taskIdx];
-    const newUpdateTask: TaskDto = {
-      ...task,
-      status,
+  async updateStatus(id: number, status: TaskStatusType): Promise<TaskDto> {
+    return this.mapEntityToDto(
+      await this.taskRepository.updateStatus(id, status),
+    );
+  }
+
+  private mapEntityToDto(taskEntity: TaskEntity): TaskDto {
+    return {
+      id: taskEntity.id,
+      name: taskEntity.name,
+      note: taskEntity.note,
+      status: taskEntity.status,
     };
-    this.tasks.splice(taskIdx, 1, newUpdateTask);
-    return Promise.resolve(newUpdateTask);
   }
 }
