@@ -1,0 +1,3 @@
+export const ENTITY_ERRORS = {
+  DUPLICATE_ENTITY: '23505',
+};
