@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+
+import { User } from '../auth/decorator/user.decorator';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { TaskEntity } from './data-access/task.entity';
 import { TaskRepository } from './data-access/task.repository';
 import { CreateTaskDto } from './dto/create-task.model';
@@ -16,35 +18,46 @@ export class TaskService {
     private readonly taskRepository: TaskRepository,
   ) {}
 
-  private tasks: TaskDto[] = [];
-
   async list(
+    user: User,
     filter: FilteredTaskDto,
     pagination: PaginationQueryDto,
   ): Promise<TaskDto[]> {
-    const tasks = await this.taskRepository.getFilteredTask(filter, pagination);
+    const tasks = await this.taskRepository.getFilteredTask(
+      user,
+      filter,
+      pagination,
+    );
     return tasks.map(this.mapEntityToDto);
   }
 
-  async getById(id: number): Promise<TaskDto> {
-    return this.mapEntityToDto(await this.taskRepository.getById(id));
+  async getById(user: User, id: number): Promise<TaskDto> {
+    return this.mapEntityToDto(await this.taskRepository.getById(user, id));
   }
 
-  async insert(createTask: CreateTaskDto): Promise<TaskDto> {
+  async insert(user: User, createTask: CreateTaskDto): Promise<TaskDto> {
     return this.mapEntityToDto(
-      await this.taskRepository.createTask(createTask),
+      await this.taskRepository.createTask(user, createTask),
     );
   }
 
-  async update(id: number, updateTask: UpdateTaskDto): Promise<TaskDto> {
+  async update(
+    user: User,
+    id: number,
+    updateTask: UpdateTaskDto,
+  ): Promise<TaskDto> {
     return this.mapEntityToDto(
-      await this.taskRepository.updateTask(id, updateTask),
+      await this.taskRepository.updateTask(user, id, updateTask),
     );
   }
 
-  async updateStatus(id: number, status: TaskStatusType): Promise<TaskDto> {
+  async updateStatus(
+    user: User,
+    id: number,
+    status: TaskStatusType,
+  ): Promise<TaskDto> {
     return this.mapEntityToDto(
-      await this.taskRepository.updateStatus(id, status),
+      await this.taskRepository.updateStatus(user, id, status),
     );
   }
 

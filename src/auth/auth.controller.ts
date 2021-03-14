@@ -2,7 +2,7 @@ import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { UserEntity } from './data-access/user.entity';
-import { GetUser } from './decorator/user.decorato';
+import { GetUser } from './decorator/user.decorator';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthTokenDto } from './dto/auth-token.dto';
 

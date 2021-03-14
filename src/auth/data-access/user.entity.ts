@@ -1,4 +1,11 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { TaskEntity } from '../../task/data-access/task.entity';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('USER')
 export class UserEntity extends BaseEntity {
@@ -13,4 +20,7 @@ export class UserEntity extends BaseEntity {
 
   @Column({ name: 'SALT' })
   salt: string;
+
+  @OneToMany(() => TaskEntity, (task) => task.user, { eager: true })
+  tasks: TaskEntity[];
 }

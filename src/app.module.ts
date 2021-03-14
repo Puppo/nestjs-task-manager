@@ -17,8 +17,8 @@ import { AuthModule } from './auth/auth.module';
         synchronize: true, // your entities will be synced with the database (ORM will map entity definitions to corresponding SQL tabled), every time you run the application (recommended: disable in the production)
       }),
     }),
-    TaskModule,
     AuthModule,
+    TaskModule,
   ],
 })
 export class AppModule {}
