@@ -75,6 +75,7 @@ function ensureEnum<E>(this: EnumOf<E>, e: unknown): e is EnumType<E> {
  * Enum.KEY1.value; // --> 'VALUE1'
  * let value1: string = 'VALUE1'
  * if(Enum.ensureEnum(value1)) { value1 // type: "VALUE1" | "VALUE2" } // --> OK
+ * Enum.values // ["VALUE1", "VALUE2", 3, true]
  */
 export function EnumBuilder<E extends Record<string, unknown>>(
   obj: E,

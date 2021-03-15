@@ -1,6 +1,36 @@
 version: '3'
 services:
-  db:
+  dev:
+    container_name: task-manager-api-dev
+    image: task-manager-api-dev:1.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+      args:
+        - NODE_ENV=development
+    command: npm run start:debug
+    ports:
+      - 3000:3000
+      - 9229:9229
+    environment:
+      DB_HOST: postgres_db
+      DB_PORT: 5432
+      DB_NAME: taskmanager
+      DB_USERNAME: taskmanager
+      DB_PASSWORD: pass123
+    networks:
+      - task-manager-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - postgres_db
+    links:
+      - postgres_db:postgres_db
+    restart: unless-stopped
+
+  postgres_db:
     image: postgres
     restart: always
     ports:
@@ -9,12 +39,8 @@ services:
       POSTGRES_DB: taskmanager
       POSTGRES_USER: taskmanager
       POSTGRES_PASSWORD: pass123
-  test-db:
-    image: postgres
-    restart: always
-    ports:
-      - '5433:5432'
-    environment:
-      POSTGRES_DB: taskmanager-test
-      POSTGRES_USER: taskmanager
-      POSTGRES_PASSWORD: pass123
+    networks:
+      - task-manager-network
+
+networks:
+  task-manager-network:

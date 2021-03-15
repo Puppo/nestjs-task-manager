@@ -1,4 +1,4 @@
-import { EnumType, EnumBuilder } from 'src/common/enum-utils';
+import { EnumType, EnumBuilder } from 'src/utils/enum-utils';
 
 const TASK_STATUS = {
   OPEN: 'OPEN',

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Log } from 'src/logger/decorator/logger.decorator';
 
 import { User } from '../auth/decorator/user.decorator';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
@@ -11,6 +12,7 @@ import { TaskDto } from './dto/task.model';
 import { UpdateTaskDto } from './dto/update-task.model';
 import { TaskStatusType } from './enum/status.model';
 
+@Log()
 @Injectable()
 export class TaskService {
   constructor(
