@@ -19,6 +19,8 @@ services:
       DB_NAME: taskmanager
       DB_USERNAME: taskmanager
       DB_PASSWORD: pass123
+      JWT_SECRET: 'secret51'
+      JWT_EXPIRES_IN: 3600
     networks:
       - task-manager-network
     volumes:

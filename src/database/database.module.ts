@@ -1,7 +1,14 @@
 import { DynamicModule, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ConnectionOptions, createConnection } from 'typeorm';
+import dbConfigLoader from './config/db-config.loader';
+import { DbConfigService } from './config/db-config.service';
 
-@Module({})
+@Module({
+  imports: [ConfigModule.forFeature(dbConfigLoader)],
+  providers: [DbConfigService],
+  exports: [DbConfigService],
+})
 export class DatabaseModule {
   static register(options: ConnectionOptions): DynamicModule {
     return {
