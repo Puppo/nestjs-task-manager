@@ -2,7 +2,7 @@ version: '3'
 services:
   dev:
     container_name: task-manager-api-dev
-    image: task-manager-api-dev:1.0.0
+    image: task-manager-api-dev:ALPHA
     build:
       context: .
       target: development
@@ -21,6 +21,7 @@ services:
       DB_PASSWORD: pass123
       JWT_SECRET: 'secret51'
       JWT_EXPIRES_IN: 3600
+      LOGGER_LEVEL: 'verbose'
     networks:
       - task-manager-network
     volumes:
